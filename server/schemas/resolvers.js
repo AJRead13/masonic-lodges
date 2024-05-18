@@ -21,6 +21,18 @@ const resolvers = {
             const token = signToken(user);
 
             return {token, user}
+        },
+        login: async(parent, {email, password}) => {
+            const user = await User.findOne({ email });
+
+            if(!user) throw AuthenticationError;
+
+            const validPassword = await user.isValidPassword(password);
+
+            if (!validPassword) throw AuthenticationError;
+
+            const token = signToken(user);
+            return { token, user };
         }
     }
 }
